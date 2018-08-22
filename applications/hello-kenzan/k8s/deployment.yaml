@@ -5,13 +5,14 @@ metadata:
   labels:
     app: hello-kenzan
 spec:
+  type: LoadBalancer
   ports:
     - port: 8012
+      protocol: TCP
       targetPort: 80
   selector:
     app: hello-kenzan
     tier: hello-kenzan
-  type: NodePort
 
 ---
 apiVersion: extensions/v1beta1
@@ -30,8 +31,8 @@ spec:
         tier: hello-kenzan
     spec:
       containers:
-      - image: local.docker.cn:5000/hello-kenzan:latest
-        name: hello-kenzan
-        ports:
-        - containerPort: 80
+        - image: local.docker.cn:5000/hello-kenzan:latest
           name: hello-kenzan
+          ports:
+            - containerPort: 80
+              name: hello-kenzan
