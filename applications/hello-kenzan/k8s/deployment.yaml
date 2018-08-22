@@ -6,7 +6,7 @@ metadata:
     app: hello-kenzan
 spec:
   ports:
-    - port: 80
+    - port: 8012
       targetPort: 80
   selector:
     app: hello-kenzan
@@ -30,7 +30,7 @@ spec:
         tier: hello-kenzan
     spec:
       containers:
-      - image: 127.0.0.1:30400/hello-kenzan:latest
+      - image: local.docker.cn:5000/hello-kenzan:latest
         name: hello-kenzan
         ports:
         - containerPort: 80
