@@ -8,7 +8,7 @@ node {
 
     tag = readFile('commit-id').replace("\n", "").replace("\r", "")
     appName = "puzzle"
-    registryHost = "127.0.0.1:30400/"
+    registryHost = "local.docker.cn:5000/"
     imageName = "${registryHost}${appName}:${tag}"
     env.BUILDIMG=imageName
 
@@ -22,5 +22,5 @@ node {
 
     stage "Deploy"
         
-        sh "sed 's#127.0.0.1:30400/puzzle:latest#'$BUILDIMG'#' applications/puzzle/k8s/deployment.yaml | kubectl apply -f -"
+        sh "sed 's#local.docker.cn:5000/puzzle:latest#'$BUILDIMG'#' applications/puzzle/k8s/deployment.yaml | kubectl apply -f -"
 }
