@@ -10,7 +10,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/jenkins/"
+    path: '/data/jenkins/'
 
 ---
 kind: PersistentVolumeClaim
@@ -32,12 +32,12 @@ metadata:
     app: jenkins
 spec:
   ports:
-    - port: 80
+    - port: 8022
       targetPort: 8080
   selector:
     app: jenkins
     tier: jenkins
-  type: NodePort
+  type: LoadBalancer
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -55,22 +55,22 @@ spec:
         tier: jenkins
     spec:
       containers:
-      - image: chadmoon/jenkins-docker-kubectl:latest
-        name: jenkins
-        securityContext:
-          privileged: true
-        ports:
-        - containerPort: 8080
+        - image: local.docker.cn:5000/jenkins
           name: jenkins
-        volumeMounts:
-        - name: jenkins-persistent-storage
-          mountPath: /root/.jenkins
-        - name: docker
-          mountPath: /var/run/docker.sock
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 8080
+              name: jenkins
+          volumeMounts:
+            - name: jenkins-persistent-storage
+              mountPath: /root/.jenkins
+            - name: docker
+              mountPath: /var/run/docker.sock
       volumes:
-      - name: docker
-        hostPath:
-          path: /var/run/docker.sock
-      - name: jenkins-persistent-storage
-        persistentVolumeClaim:
-          claimName: jenkins-claim
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
+        - name: jenkins-persistent-storage
+          persistentVolumeClaim:
+            claimName: jenkins-claim
