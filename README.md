@@ -105,11 +105,11 @@ Let’s make a change to an HTML file in the cloned project. Open the /applicati
 
 Now let’s build an image, giving it a special name that points to our local cluster registry.
 
-`docker build -t 127.0.0.1:30400/hello-kenzan:latest -f applications/hello-kenzan/Dockerfile applications/hello-kenzan`
+`docker build -t local.docker.cn:5000/hello-kenzan:latest -f applications/hello-kenzan/Dockerfile applications/hello-kenzan`
 
 #### Step12
 
-We’ve built the image, but before we can push it to the registry, we need to set up a temporary proxy. By default the Docker client can only push to HTTP (not HTTPS) via localhost. To work around this, we’ll set up a container that listens on 127.0.0.1:30400 and forwards to our cluster.
+We’ve built the image, but before we can push it to the registry, we need to set up a temporary proxy. By default the Docker client can only push to HTTP (not HTTPS) via localhost. To work around this, we’ll set up a container that listens on local.docker.cn:5000 and forwards to our cluster.
 
 `docker stop socat-registry; docker rm socat-registry; docker run -d -e "REGIP=`minikube ip`" --name socat-registry -p 30400:5000 chadmoon/socat:latest bash -c "socat TCP4-LISTEN:5000,fork,reuseaddr TCP4:`minikube ip`:30400"`
 
@@ -117,7 +117,7 @@ We’ve built the image, but before we can push it to the registry, we need to s
 
 With our proxy container up and running, we can now push our image to the local repository.
 
-`docker push 127.0.0.1:30400/hello-kenzan:latest`
+`docker push local.docker.cn:5000/hello-kenzan:latest`
 
 #### Step14
 
@@ -235,7 +235,7 @@ The crossword application is a multi-tier application whose services depend on e
 
 Now we're going to walk through an initial build of the monitor-scale service.
 
-`docker build -t 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD` -f applications/monitor-scale/Dockerfile applications/monitor-scale`
+`docker build -t local.docker.cn:5000/monitor-scale:`git rev-parse --short HEAD` -f applications/monitor-scale/Dockerfile applications/monitor-scale`
 
 #### Step6
 
@@ -247,7 +247,7 @@ Set up a proxy so we can push the monitor-scale Docker image we just built to ou
 
 Push the monitor-scale image to the registry.
 
-`docker push 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD``
+`docker push local.docker.cn:5000/monitor-scale:`git rev-parse --short HEAD``
 
 #### Step8
 
@@ -265,7 +265,7 @@ Open the registry UI and verify that the monitor-scale image is in our local reg
 
 Create the monitor-scale deployment and service.
 
-`sed 's#127.0.0.1:30400/monitor-scale:latest#127.0.0.1:30400/monitor-scale:'`git rev-parse --short HEAD`'#' applications/monitor-scale/k8s/deployment.yaml | kubectl apply -f -`
+`sed 's#local.docker.cn:5000/monitor-scale:latest#local.docker.cn:5000/monitor-scale:'`git rev-parse --short HEAD`'#' applications/monitor-scale/k8s/deployment.yaml | kubectl apply -f -`
 
 #### Step11
 
